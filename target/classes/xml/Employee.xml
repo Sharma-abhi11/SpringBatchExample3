@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Employees>
+	<employee>
+		<empId>1</empId>
+		<empName>John</empName>
+		<empSal>100000</empSal>
+		<empMobile>8765432123</empMobile>
+	</employee>
+	<employee>
+		<empId>2</empId>
+		<empName>Peter</empName>
+		<empSal>8000</empSal>
+		<empMobile>8765432183</empMobile>
+	</employee>
+	<employee>
+		<empId>3</empId>
+		<empName>Sam</empName>
+		<empSal>50000</empSal>
+		<empMobile>8765432123</empMobile>
+	</employee>
+	<employee>
+		<empId>4</empId>
+		<empName>Jennifer</empName>
+		<empSal>15000</empSal>
+		<empMobile>8765432123</empMobile>
+	</employee>
+	<employee>
+		<empId>5</empId>
+		<empName>Debbie</empName>
+		<empSal>90000</empSal>
+		<empMobile>8765432123</empMobile>
+	</employee>
+	
+
+</Employees>

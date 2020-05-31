@@ -1,0 +1,90 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:batch="http://www.springframework.org/schema/batch" xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/batch
+		http://www.springframework.org/schema/batch/spring-batch-2.2.xsd
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/util 
+		http://www.springframework.org/schema/util/spring-util-3.2.xsd">
+
+
+	<batch:job id="employeeJob2">
+		<batch:step id="step1">
+			<batch:tasklet>
+				<batch:chunk reader="flatFileItemReader" writer="xmlItemWriter"
+					processor="filterEmployeeProcessor" commit-interval="1" skip-limit="4">
+					<batch:skippable-exception-classes>
+						<batch:include
+							class="org.springframework.batch.item.file.FlatFileParseException" />
+						<batch:include class="com.mykong.exceptions.SkipException" />
+					</batch:skippable-exception-classes>
+					<batch:listeners>
+						<batch:listener ref="recordSkipListener"/>
+					</batch:listeners>
+				</batch:chunk>
+			</batch:tasklet>
+		</batch:step>
+	</batch:job>
+
+	<bean id="recordSkipListener" class="com.mykong.listener.RecordSkipListener"/>
+	<bean id="filterEmployeeProcessor" class="com.mkyong.processor.FilterEmployeeProcessor" />
+
+	<!-- ItemReader reads a complete line one by one from input file -->
+	<bean id="flatFileItemReader" class="org.springframework.batch.item.file.FlatFileItemReader"
+		scope="step" >
+		<property name="linesToSkip" value="1"/>
+		<property name="resource" value="file:cvs/employeeData.csv" />
+
+		<property name="lineMapper">
+
+			<bean class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
+
+				<property name="fieldSetMapper">
+					<!-- Mapper which maps each individual items in a record to properties 
+						in POJO -->
+					<bean class="com.mkyong.mapper.EmployeeCsvtoXml" />
+				</property>
+
+				<property name="lineTokenizer">
+					<!-- A tokenizer class to be used when items in input record are separated 
+						by specific characters -->
+					<bean
+						class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer">
+						<property name="delimiter" value="," />
+					</bean>
+				</property>
+
+			</bean>
+
+		</property>
+
+	</bean>
+
+
+
+	<!-- XML ItemWriter which writes the data in XML format -->
+	<bean id="xmlItemWriter" class="org.springframework.batch.item.xml.StaxEventItemWriter">
+
+		<property name="resource" value="file:xml/EmployeeOutput.xml" />
+
+		<property name="rootTagName" value="employee" />
+
+		<property name="marshaller">
+
+			<bean class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+				<property name="classesToBeBound">
+					<list>
+						<value>com.mkyong.model.Employee</value>
+					</list>
+				</property>
+			</bean>
+
+		</property>
+
+	</bean>
+
+
+
+
+</beans>
